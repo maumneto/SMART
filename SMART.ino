@@ -1,9 +1,11 @@
   
-/* ########################################################
-  SMART: Sistema de MonitorAmento de Ruído para smarTcities  
-  Autor: Maurício Moreira Neto
-  Data: 19/10/2017
- ########################################################## */
+/* 
+ #####################################################################
+  @title: SMART - Sistema de MonitorAmento de Ruído para smarTcities  
+  @author: Maurício Moreira Neto
+  @update: 23/10/2017
+ #####################################################################
+ */
 
 //Definicao pinos leds
 int pinoled_ver = 3;
@@ -51,13 +53,14 @@ void loop()
   Serial.print("Ruído: ");
   Serial.println(dB);
   Serial.println("");
-  //delay(1000);
+  delay(1000);
+  //digitalWrite(pinoled_ver, HIGH);
   
   // Threshold dos valores de ruido
-  if(valor_A0 < 0){
+    if(valor_A0 < 0){
       Serial.println("Erro no sensor!");
     }
-  if (valor_A0 > 0 && valor_A0 < 300){
+    if (valor_A0 > 0 && valor_A0 < 300){
       digitalWrite(pinoled_ver, HIGH);
       digitalWrite(pinoled_ama, LOW);
       digitalWrite(pinoled_verm, LOW);
