@@ -65,7 +65,7 @@ void loop()
       digitalWrite(pinoled_ama, LOW);
       digitalWrite(pinoled_verm, LOW);
     }
-    if (valor_A0 > 300 && valor_A0 < 700){
+    if (valor_A0 > 301 && valor_A0 < 700){
       digitalWrite(pinoled_ver, LOW);
       digitalWrite(pinoled_ama, HIGH);
       digitalWrite(pinoled_verm, LOW);
