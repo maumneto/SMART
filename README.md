@@ -7,6 +7,6 @@ o SMART enviará um alerta as autoridades fiscalizadoras. Este projeto também c
 O prototipo do hardware é composto pelos seguintes módulos:
 - Arduino ATMEGA 2560
 - Sensor de detector de som KY038
-- Módulo de comunicação nodeMCU
+- Módulo de comunicação ESP8266
 - 3 LEDs (verde, amarelo e vermelho) ou sensor RGB
 
