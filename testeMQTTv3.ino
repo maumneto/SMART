@@ -11,6 +11,7 @@
 #include <WiFiEspUdp.h>
 #include <PubSubClient.h>
 
+/ -----------------------------------------------------------------------------
 IPAddress server(192, 168, 0, 110);
 char ssid[] = "AAAA";           // your network SSID (name)
 char pass[] = "BBBB";           // your network password
@@ -31,16 +32,8 @@ int valor_A0 = 0;
 
 // Initialize the Ethernet client object
 WiFiEspClient espClient;
-
 PubSubClient client(espClient);
-
-/*
-  - Iniciando o monitor serial
-  - Definindo os pinos dos LEDs
-  - Definindo o pino analogico do sensor de som KY 038
-*/
-
-//SoftwareSerial soft(3,2); // RX, TX
+// -----------------------------------------------------------------------------
 void setup() {
   //Define pinos led como saida
   pinMode(pinoled_ver, OUTPUT);
@@ -82,6 +75,7 @@ void setup() {
   client.setCallback(callback);
 }
 
+/ -----------------------------------------------------------------------------
 //print any message received for subscribed topic
 void callback(char* topic, byte* payload, unsigned int length) {
   Serial.print("Message arrived [");
@@ -93,12 +87,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
   Serial.println();
 }
 
-/*
-  - Mostrando os valores no monitor serial
-  - Calculo do nivel de ruido (em dB)
-  - Threshold do valor de som
-*/
-
+/ -----------------------------------------------------------------------------
 void loop() {
   // put your main code here, to run repeatedly:
   if (!client.connected()) {
@@ -142,6 +131,7 @@ void loop() {
 //    }
 //}  
 
+/ -----------------------------------------------------------------------------
 void reconnect() {
   // Loop until we're reconnected
   while (!client.connected()) {
