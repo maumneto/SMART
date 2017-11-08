@@ -5,16 +5,19 @@
   @update: 23/10/2017
  #####################################################################
 */
+/*
+https://create.arduino.cc/projecthub/thingsboard/temperature-dashboard-using-arduino-uno-esp8266-and-mqtt-5e26eb
+*/
 
 #include <WiFiEsp.h>
 #include <WiFiEspClient.h>
 #include <WiFiEspUdp.h>
 #include <PubSubClient.h>
 
-/ -----------------------------------------------------------------------------
-IPAddress server(192, 168, 0, 110);
-char ssid[] = "AAAA";           // your network SSID (name)
-char pass[] = "BBBB";           // your network password
+// -----------------------------------------------------------------------------
+IPAddress server(192, 168, 1, 3);
+char ssid[] = "MauMauWiFiZis";           // your network SSID (name)
+char pass[] = "mau19901953";           // your network password
 int status = WL_IDLE_STATUS;   // the Wifi radio's status
 
 //Definicao pinos leds
@@ -75,24 +78,36 @@ void setup() {
   client.setCallback(callback);
 }
 
-/ -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 //print any message received for subscribed topic
 void callback(char* topic, byte* payload, unsigned int length) {
   Serial.print("Message arrived [");
   Serial.print(topic);
   Serial.print("] ");
+  String message;
+  
   for (int i=0;i<length;i++) {
-    Serial.print((char)payload[i]);
+    char c = (char)payload[i];
+    message += c;
   }
-  Serial.println();
+  Serial.println("topico");
+  Serial.println(topic);
+  Serial.println(" | ");
+  Serial.println(message);
 }
 
-/ -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 void loop() {
   // put your main code here, to run repeatedly:
   if (!client.connected()) {
     reconnect();
   }
+
+  String payload = (String)pino_analogico;
+  payload += pino_analogico;
+  char payloadChar[payload.length()];
+  payload.toCharArray(payloadChar, payload.length() + 1);
+  client.publish("topicao", payloadChar);
   client.loop();
 }
 
@@ -131,7 +146,8 @@ void loop() {
 //    }
 //}  
 
-/ -----------------------------------------------------------------------------
+
+// -----------------------------------------------------------------------------
 void reconnect() {
   // Loop until we're reconnected
   while (!client.connected()) {
@@ -140,7 +156,7 @@ void reconnect() {
     if (client.connect("arduinoClient")) {
       Serial.println("connected");
       // Once connected, publish an announcement...
-      client.publish("command","hello world");
+      //client.publish("topico", payloadChar);
       // ... and resubscribe
       //client.subscribe("presence");
     } else {
