@@ -7,9 +7,11 @@
 #define pinY 6
 #define pinR 7
 
-int pinNoise = A0;
-float  tensao = 0;
+String topic = "mamada/fodona";
+int pinNoise = 3;
+//float  tensao = 0;
 int dB = 0;
+
 
 IPAddress server(192, 168, 0, 69);
 char ssid[] = "MauMauWiFiZis";           // your network SSID (name)
@@ -18,15 +20,17 @@ int status = WL_IDLE_STATUS;             // the Wifi radio's status
 
 WiFiEspClient espClient;
 PubSubClient client(espClient);
-//unsigned long lastSend;
+
 // Setup
 void setup() {
   Serial.begin(9600);
   Serial1.begin(9600);
   pinMode(pinNoise, INPUT);
+  pinMode(pinG, OUTPUT);
+  pinMode(pinY, OUTPUT);
+  pinMode(pinR, OUTPUT);
   InitWiFi();
   client.setServer(server,1883);
-  //lastSend = 0;
 }
 // Loop
 void loop() {
@@ -45,47 +49,69 @@ void loop() {
     if (!client.connected()){
         reconnect();
       }
-    //if (millis() - lastSend > 1000){
       getNoiseData();
       delay(3000);
-    //  lastSend = millis();
-    //  }
       client.loop();
 }
 // getNoiseData
 void getNoiseData(){
     Serial.println("Coletando os dados de ruído!");
-    float noise = pinNoise;
-    noise = analogRead(pinNoise);
-    tensao = noise/1023.0*4.53;
-    dB = 87.1*tensao - 75,4; 
+   // float noise = pinNoise;
+    int noise = digitalRead(pinNoise);
+    double dB = 20 * log10(noise / 5);
+    //tensao = noise/1023.0*4.53;
+    //dB = 87.1*tensao - 75,4; 
     
     // checando se o sensor funciona
     if (isnan(noise)){
-        Serial.println("Falha na leitura do sensor de ruído KY038");
+        Serial.println(" Falha na leitura do sensor de ruído KY038 ");
         return;
       }
-      Serial.print("Ruído:");
+      
+      Serial.print(" Ruído:");
       Serial.print(noise);
-      Serial.print("dB");
+      Serial.print(" dB ");
       
       // convertendo para string
       String noiseS = String(noise);
 
-        // debugando mensagens
+      // debugando mensagens
       Serial.print( "Enviando os dados de ruído : [" );
       Serial.print(noiseS);
       Serial.print( "] -> " );
+      
       // JSON
-      String payload = "{";
+      String payload = " { ";
+      payload += "\"topico\":"; payload += topic;
+      payload += " | ";
       payload += "\"ruido\":"; payload += noiseS;
-      payload += "}";
+      payload += " dB ";
+      payload += " } ";
 
       // Send payload
       char attributes[100];
       payload.toCharArray( attributes, 100 );
       client.publish( "mamada/fodona", attributes );
       Serial.println( attributes );
+
+      if(dB < 0){
+        Serial.println("Erro no sensor!");
+      }
+      if (dB > 0 && dB < 20){
+        digitalWrite(pinG, HIGH);
+        digitalWrite(pinY, LOW);
+        digitalWrite(pinR, LOW);
+      }
+      if (dB > 21 && dB < 40){
+        digitalWrite(pinG, LOW);
+        digitalWrite(pinY, HIGH);
+        digitalWrite(pinR, LOW);
+      }
+      if (dB > 41  ){
+        digitalWrite(pinG, LOW);
+        digitalWrite(pinY, LOW);
+        digitalWrite(pinR, HIGH);
+      }
 }
 // initWiFi  
 void InitWiFi(){

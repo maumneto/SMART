@@ -2,7 +2,7 @@
   Example code: Digital output
 */
 
-int Led = 13 ;// define LED Interface
+int Led = 5 ;// define LED Interface
 int buttonpin = 3; // define D0 Sensor Interface
 int val = 0;// define numeric variables val
  
@@ -18,7 +18,8 @@ void loop ()
   if (val == HIGH) // When the sound detection module detects a signal, LED flashes
   {
     digitalWrite (Led, HIGH);
-  }
+    delay(2000);
+    }
   else
   {
     digitalWrite (Led, LOW);
