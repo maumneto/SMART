@@ -1,3 +1,16 @@
+/** ==================================================================================
+                      PROJETO SMART
+    Projeto de monitoramento de ruído urbano em cidades inteligentes.
+  
+    @author: Maurício Moreira Neto
+    @date: 10/11/2017
+
+    Hardware utilizado: Arduino MEGA 2560 / 3xLEDs / Sensor Microfone KY038 /
+    3xResistores / ESP8266 / Protoboard / Jumpers
+    
+    Bibliotecas necessárias: NTPClient.h / WiFiEsp.h / WiFiEspClient.h / WiFiUdp.h
+      PubSubClient.h
+   ==================================================================================== */
 #include <NTPClient.h>
 #include <WiFiEsp.h>
 #include <WiFiEspClient.h>
@@ -10,7 +23,6 @@
 
 WiFiUDP ntpUDP;
 
-String topic = "mamada/fodona";
 int pinNoise = 3;
 int dB = 0;
 //para o calculo da hora
