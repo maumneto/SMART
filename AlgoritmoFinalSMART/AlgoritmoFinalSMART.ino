@@ -1,38 +1,62 @@
+#include <NTPClient.h>
 #include <WiFiEsp.h>
 #include <WiFiEspClient.h>
-#include <WiFiEspUdp.h>
+#include <WiFiUdp.h>
 #include <PubSubClient.h>
 
 #define pinG 5
 #define pinY 6
 #define pinR 7
 
+WiFiUDP ntpUDP;
+
 String topic = "mamada/fodona";
 int pinNoise = 3;
-//float  tensao = 0;
 int dB = 0;
+//para o calculo da hora
+int16_t utc = -3; //UTC -3:00 Brazil
+uint32_t currentMillis = 0;
+uint32_t previousMillis = 0;
 
-
+/**
+  Variaveis para conexão do Arduio a rede WiFi
+*/
 IPAddress server(192, 168, 0, 69);
 char ssid[] = "MauMauWiFiZis";           // your network SSID (name)
 char pass[] = "mau19901953";             // your network password
 int status = WL_IDLE_STATUS;             // the Wifi radio's status
 
+NTPClient timeClient(ntpUDP, "a.st1.ntp.br", utc*3600, 60000);
 WiFiEspClient espClient;
 PubSubClient client(espClient);
 
-// Setup
+/**
+          Funcao de Setup
+  Inicia as Seriais
+  Inicia os pinos de LED e os pinos de entrada de dados 
+  Inicia o módulo de comunicação WiFi e a rede
+  Inicia o NTP
+*/ 
 void setup() {
   Serial.begin(9600);
-  Serial1.begin(9600);
+  Serial1.begin(9600); // comunicação
   pinMode(pinNoise, INPUT);
   pinMode(pinG, OUTPUT);
   pinMode(pinY, OUTPUT);
   pinMode(pinR, OUTPUT);
   InitWiFi();
   client.setServer(server,1883);
+  // NTP
+  timeClient.begin();
+  timeClient.update();
 }
-// Loop
+/**
+      Funcao Loop
+  Verifica se houve a comunicação com a rede WiFi
+  Caso não, o algoritmo fica tentando fazer a reconexão
+  Pega o horário pela função checkOST()
+  Capura o dado pela função getNoiseData()
+*/
 void loop() {
   status = WiFi.status();
   if (status != WL_CONNECTED){
@@ -49,19 +73,24 @@ void loop() {
     if (!client.connected()){
         reconnect();
       }
+      //checkOST();
       getNoiseData();
       delay(3000);
       client.loop();
 }
-// getNoiseData
+/**
+      Funcao getNoiseData()
+  Envia os dados no formato JSON via MQTT para os subscribers
+  Faz o calculo do Decibeis 
+  Cria a lógica dos LEDs
+*/
 void getNoiseData(){
+
+    String date = timeClient.getFormattedTime();
     Serial.println("Coletando os dados de ruído!");
-   // float noise = pinNoise;
     int noise = digitalRead(pinNoise);
     double dB = 20 * log10(noise / 5);
-    //tensao = noise/1023.0*4.53;
-    //dB = 87.1*tensao - 75,4; 
-    
+
     // checando se o sensor funciona
     if (isnan(noise)){
         Serial.println(" Falha na leitura do sensor de ruído KY038 ");
@@ -82,6 +111,8 @@ void getNoiseData(){
       
       // JSON
       String payload = " { ";
+      payload += "\"Time\":"; payload += date;
+      payload += " | ";
       payload += "\"topico\":"; payload += topic;
       payload += " | ";
       payload += "\"ruido\":"; payload += noiseS;
@@ -113,7 +144,28 @@ void getNoiseData(){
         digitalWrite(pinR, HIGH);
       }
 }
-// initWiFi  
+/**
+      Funcao forceUpdata()
+  Força o dispositivo a atualizar o horário
+*/
+void forceUpdate(void) {
+  timeClient.forceUpdate();
+}
+// checkOST
+void checkOST(void) {
+  currentMillis = millis();//Tempo atual em ms
+  //Lógica de verificação do tempo
+  if (currentMillis - previousMillis > 1000) {
+    previousMillis = currentMillis;    // Salva o tempo atual
+    printf("Tempo: %d: ", timeClient.getEpochTime());
+    Serial.println(timeClient.getFormattedTime());
+  }
+}
+/**
+      Funcao initWiFi()
+  Verifica a conexão com o módulo de comunicação WiFi
+  Se conecta a rede WiFi setada nas variaveis globais
+*/
 void InitWiFi(){
     Serial.begin(9600);
     WiFi.init(&Serial1);
@@ -134,10 +186,14 @@ void InitWiFi(){
         }
        Serial.println("Conectando ao AP");
 }
-// reconnect
+/**
+      Funcao reconnect()
+  Se conecta aao Broker via MQTT...
+  Caso falhe, ele tentará reconexão em 5 segundos.
+*/
 void reconnect() {
   while (!client.connected()) {
-    Serial.print("Tentando conectar com o MQTT ...");
+    Serial.print("Tentando conectar com o Broker ...");
     if (client.connect("arduinoClient")) {
       Serial.println("Conectado!");
       } else {
@@ -148,11 +204,3 @@ void reconnect() {
     }
   }
 }
-
-
-
-
-
-
-
-
