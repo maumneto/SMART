@@ -11,7 +11,7 @@
     Bibliotecas necessárias: NTPClient.h / WiFiEsp.h / WiFiEspClient.h / WiFiUdp.h
       PubSubClient.h
    ==================================================================================== */
-#include <NTPClient.h>
+//#include <NTPClient.h>
 #include <WiFiEsp.h>
 #include <WiFiEspClient.h>
 #include <WiFiUdp.h>
@@ -21,24 +21,25 @@
 #define pinY 6
 #define pinR 7
 
-WiFiUDP ntpUDP;
+//WiFiUDP ntpUDP;
 
+String topic = "mamada/fodona";
 int pinNoise = 3;
 int dB = 0;
 //para o calculo da hora
-int16_t utc = -3; //UTC -3:00 Brazil
-uint32_t currentMillis = 0;
-uint32_t previousMillis = 0;
+//int16_t utc = -3; //UTC -3:00 Brazil
+//uint32_t currentMillis = 0;
+//uint32_t previousMillis = 0;
 
 /**
   Variaveis para conexão do Arduio a rede WiFi
 */
-IPAddress server(192, 168, 0, 69);
-char ssid[] = "MauMauWiFiZis";           // your network SSID (name)
-char pass[] = "mau19901953";             // your network password
+IPAddress server(192, 168, 0, 111);
+char ssid[] = "jarvis";           // your network SSID (name)
+char pass[] = "l30n4rd019s3";             // your network password
 int status = WL_IDLE_STATUS;             // the Wifi radio's status
 
-NTPClient timeClient(ntpUDP, "a.st1.ntp.br", utc*3600, 60000);
+//NTPClient timeClient(ntpUDP, "a.st1.ntp.br", utc*3600, 60000);
 WiFiEspClient espClient;
 PubSubClient client(espClient);
 
@@ -59,8 +60,8 @@ void setup() {
   InitWiFi();
   client.setServer(server,1883);
   // NTP
-  timeClient.begin();
-  timeClient.update();
+//  timeClient.begin();
+//  timeClient.update();
 }
 /**
       Funcao Loop
@@ -98,7 +99,7 @@ void loop() {
 */
 void getNoiseData(){
 
-    String date = timeClient.getFormattedTime();
+    //String date = timeClient.getFormattedTime();
     Serial.println("Coletando os dados de ruído!");
     int noise = digitalRead(pinNoise);
     double dB = 20 * log10(noise / 5);
@@ -123,8 +124,8 @@ void getNoiseData(){
       
       // JSON
       String payload = " { ";
-      payload += "\"Time\":"; payload += date;
-      payload += " | ";
+     // payload += "\"Time\":"; payload += date;
+     //payload += " | ";
       payload += "\"topico\":"; payload += topic;
       payload += " | ";
       payload += "\"ruido\":"; payload += noiseS;
@@ -160,19 +161,21 @@ void getNoiseData(){
       Funcao forceUpdata()
   Força o dispositivo a atualizar o horário
 */
-void forceUpdate(void) {
-  timeClient.forceUpdate();
-}
+//void forceUpdate(void) {
+//  timeClient.forceUpdate();
+//}
 // checkOST
-void checkOST(void) {
-  currentMillis = millis();//Tempo atual em ms
-  //Lógica de verificação do tempo
-  if (currentMillis - previousMillis > 1000) {
-    previousMillis = currentMillis;    // Salva o tempo atual
-    printf("Tempo: %d: ", timeClient.getEpochTime());
-    Serial.println(timeClient.getFormattedTime());
-  }
-}
+//void checkOST(void) {
+//  unsigned int var = timeClient.getEpochTime();
+//  currentMillis = millis();//Tempo atual em ms
+//  //Lógica de verificação do tempo
+//  if (currentMillis - previousMillis > 1000) {
+//    previousMillis = currentMillis;    // Salva o tempo atual
+//    Serial.print("Tempo: ");
+//    Serial.print(var);
+//    Serial.println(timeClient.getFormattedTime());
+//  }
+//}
 /**
       Funcao initWiFi()
   Verifica a conexão com o módulo de comunicação WiFi
