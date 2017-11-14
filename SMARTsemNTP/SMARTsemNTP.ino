@@ -112,8 +112,8 @@ void getNoiseData(){
       String payload = " { ";
       payload += "\"topico\":\""; payload += topic;
       payload += "\" , ";
-      payload += "\"ruído\":\""; payload += noiseS;
-      payload += "\" } ";
+      payload += "\"ruído\":"; payload += noiseS;
+      payload += " } ";
 
       // Send payload
       char attributes[100];
