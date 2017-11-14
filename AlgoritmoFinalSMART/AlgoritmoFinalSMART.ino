@@ -14,7 +14,7 @@
 //#include <NTPClient.h>
 #include <WiFiEsp.h>
 #include <WiFiEspClient.h>
-#include <WiFiUdp.h>
+//#include <WiFiUdp.h>
 #include <PubSubClient.h>
 
 #define pinG 5
@@ -23,7 +23,7 @@
 
 //WiFiUDP ntpUDP;
 
-String topic = "mamada/fodona";
+String topic = "SMART/NOISE";
 int pinNoise = 3;
 int dB = 0;
 //para o calculo da hora
@@ -34,7 +34,7 @@ int dB = 0;
 /**
   Variaveis para conexão do Arduio a rede WiFi
 */
-IPAddress server(192, 168, 0, 111);
+IPAddress server(192, 168, 0, 105);
 char ssid[] = "jarvis";           // your network SSID (name)
 char pass[] = "l30n4rd019s3";             // your network password
 int status = WL_IDLE_STATUS;             // the Wifi radio's status
@@ -126,16 +126,16 @@ void getNoiseData(){
       String payload = " { ";
      // payload += "\"Time\":"; payload += date;
      //payload += " | ";
-      payload += "\"topico\":"; payload += topic;
-      payload += " | ";
-      payload += "\"ruido\":"; payload += noiseS;
-      payload += " dB ";
+      payload += "\"topico\":\""; payload += topic;
+      payload += "\" , ";
+      payload += "\"ruído\":"; payload += noiseS;
+      //payload += " dB ";
       payload += " } ";
 
       // Send payload
       char attributes[100];
       payload.toCharArray( attributes, 100 );
-      client.publish( "mamada/fodona", attributes );
+      client.publish( "SMART/NOISE", attributes );
       Serial.println( attributes );
 
       if(dB < 0){
