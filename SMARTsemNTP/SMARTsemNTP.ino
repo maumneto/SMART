@@ -21,13 +21,14 @@
 String topic = "SMART/NOISE";
 int pinNoise = 3;
 int dB = 0;
+int errorMQTT = -2;
 
 /**
   Variaveis para conexão do Arduio a rede WiFi
 */
-IPAddress server(192, 168, 1, 6);
-char ssid[] = "MauMauWiFiZis";           // your network SSID (name)
-char pass[] = "mau19901953";             // your network password
+IPAddress server(192, 168, 0, 112);
+char ssid[] = "jarvis";           // your network SSID (name)
+char pass[] = "l30n4rd019s3";             // your network password
 int status = WL_IDLE_STATUS;             // the Wifi radio's status
 
 WiFiEspClient espClient;
@@ -75,7 +76,7 @@ void loop() {
       }
       //checkOST();
       getNoiseData();
-      delay(3000);
+      delay(2000);
       client.loop();
 }
 /**
@@ -199,6 +200,12 @@ void reconnect() {
     Serial.print("Tentando conectar com o Broker ...");
     if (client.connect("arduinoClient")) {
       Serial.println("Conectado!");
+      String payload = " { ";
+      payload += "\"Erro\":"; payload += errorMQTT;
+      payload += " } ";
+      char attributes2[100];
+      payload.toCharArray( attributes2, 100 );
+      client.publish( "SMART/NOISE", attributes2 );
       } else {
       Serial.print("Falha, rc=");
       Serial.print(client.state());
