@@ -13,9 +13,9 @@
 #include <WiFiEspClient.h>
 #include <PubSubClient.h>
 
-#define pinG 5
-#define pinY 6
-#define pinR 7
+#define pinG 7
+#define pinB 5
+#define pinR 6
 
 
 String topic = "SMART/NOISE";
@@ -25,7 +25,7 @@ int dB = 0;
 /**
   Variaveis para conexão do Arduio a rede WiFi
 */
-IPAddress server(192, 168, 0, 122);
+IPAddress server(192, 168, 1, 6);
 char ssid[] = "MauMauWiFiZis";           // your network SSID (name)
 char pass[] = "mau19901953";             // your network password
 int status = WL_IDLE_STATUS;             // the Wifi radio's status
@@ -45,7 +45,7 @@ void setup() {
   Serial1.begin(9600); // comunicação
   pinMode(pinNoise, INPUT);
   pinMode(pinG, OUTPUT);
-  pinMode(pinY, OUTPUT);
+  pinMode(pinB, OUTPUT);
   pinMode(pinR, OUTPUT);
   InitWiFi();
   client.setServer(server,1883);
@@ -125,16 +125,20 @@ void getNoiseData(){
       if (noise < 0)
       {
           Serial.println("Erro no sensor!");
+          digitalWrite(pinG, 0);
+          digitalWrite(pinB, HIGH);
+          digitalWrite(pinR, 0);
       }
       if (noise == LOW)
       {
           digitalWrite(pinG, HIGH);
-          digitalWrite(pinR, LOW);
-          //delay(3000);
+          digitalWrite(pinB, 0);
+          digitalWrite(pinR, 0);
       }
       if (noise == HIGH)
       {
-          digitalWrite(pinG, LOW);
+          digitalWrite(pinG, 0);
+          digitalWrite(pinB, 0);
           digitalWrite(pinR, HIGH);
           delay(3000);
       }
