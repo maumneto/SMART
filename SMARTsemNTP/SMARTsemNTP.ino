@@ -19,16 +19,16 @@
 
 
 String topic = "SMART/NOISE";
-int pinNoise = 3;
+int pinNoise = A0;
 int dB = 0;
 int errorMQTT = -2;
 
 /**
   Variaveis para conexão do Arduio a rede WiFi
 */
-IPAddress server(192, 168, 0, 112);
-char ssid[] = "jarvis";           // your network SSID (name)
-char pass[] = "l30n4rd019s3";             // your network password
+IPAddress server(192, 168, 0, 135);
+char ssid[] = "MauMauWiFiZis";           // your network SSID (name)
+char pass[] = "mau19901953";             // your network password
 int status = WL_IDLE_STATUS;             // the Wifi radio's status
 
 WiFiEspClient espClient;
@@ -88,7 +88,7 @@ void loop() {
 void getNoiseData(){
 
     Serial.println("Coletando os dados de ruído!");
-    int noise = digitalRead(pinNoise);
+    int noise = analogRead(pinNoise);
     double dB = 20 * log10(noise / 5);
 
     // checando se o sensor funciona
@@ -98,11 +98,11 @@ void getNoiseData(){
       }
       
       Serial.print(" Ruído:");
-      Serial.print(noise);
+      Serial.print(dB);
       Serial.print(" dB ");
       
       // convertendo para string
-      String noiseS = String(noise);
+      String noiseS = String(dB);
 
       // debugando mensagens
       Serial.print( "Enviando os dados de ruído : [" );
@@ -123,47 +123,26 @@ void getNoiseData(){
       Serial.println( attributes );
       
       // Versão capturando o dado digital
-      if (noise < 0)
+      if (dB < 0)
       {
           Serial.println("Erro no sensor!");
           digitalWrite(pinG, 0);
-          digitalWrite(pinB, HIGH);
+          digitalWrite(pinB, 255);
           digitalWrite(pinR, 0);
       }
-      if (noise == LOW)
+      if (dB >= 0 && dB <= 30)
       {
-          digitalWrite(pinG, HIGH);
+          digitalWrite(pinG, 255);
           digitalWrite(pinB, 0);
           digitalWrite(pinR, 0);
       }
-      if (noise == HIGH)
+      if (dB > 30)
       {
           digitalWrite(pinG, 0);
           digitalWrite(pinB, 0);
-          digitalWrite(pinR, HIGH);
+          digitalWrite(pinR, 255);
           delay(3000);
       }
-      
-      // Versão capturando o dado analógico
-//      if(dB < 0){
-//        Serial.println("Erro no sensor!");
-//      }
-//      if (dB > 0 && dB < 20){
-//        digitalWrite(pinG, HIGH);
-//        digitalWrite(pinY, LOW);
-//        digitalWrite(pinR, LOW);
-//      }
-//      if (dB > 21 && dB < 40){
-//        digitalWrite(pinG, LOW);
-//        digitalWrite(pinY, HIGH);
-//        digitalWrite(pinR, LOW);
-//      }
-//      if (dB > 41  ){
-//        digitalWrite(pinG, LOW);
-//        digitalWrite(pinY, LOW);
-//        digitalWrite(pinR, HIGH);
-//      }
-}
 
 /**
       Funcao initWiFi()
