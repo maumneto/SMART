@@ -4,7 +4,6 @@
   
     @author: Maurício Moreira Neto
     @date: 10/11/2017
-
     Hardware utilizado: Arduino MEGA 2560 / 3xLEDs / Sensor Microfone KY038 /
     3xResistores / ESP8266 / Protoboard / Jumpers
     
@@ -48,7 +47,7 @@ void setup() {
   pinMode(pinG, OUTPUT);
   pinMode(pinB, OUTPUT);
   pinMode(pinR, OUTPUT);
-  InitWiFi();
+  InitWiFi();  
   client.setServer(server,1883);
 }
 /**
@@ -143,7 +142,7 @@ void getNoiseData(){
           digitalWrite(pinR, 255);
           delay(3000);
       }
-
+}
 /**
       Funcao initWiFi()
   Verifica a conexão com o módulo de comunicação WiFi
