@@ -25,9 +25,9 @@ int errorMQTT = -2;
 /**
   Variaveis para conexão do Arduio a rede WiFi
 */
-IPAddress server(192, 168, 0, 135);
-char ssid[] = "MauMauWiFiZis";           // your network SSID (name)
-char pass[] = "mau19901953";             // your network password
+IPAddress server(192, 168, 0, 129);
+char ssid[] = "LittleGreat";           // your network SSID (name)
+char pass[] = "grt@lifesg00d!16";             // your network password
 int status = WL_IDLE_STATUS;             // the Wifi radio's status
 
 WiFiEspClient espClient;
@@ -47,9 +47,10 @@ void setup() {
   pinMode(pinG, OUTPUT);
   pinMode(pinB, OUTPUT);
   pinMode(pinR, OUTPUT);
-  InitWiFi();  
+  InitWiFi();
   client.setServer(server,1883);
 }
+
 /**
       Funcao Loop
   Verifica se houve a comunicação com a rede WiFi
@@ -73,11 +74,11 @@ void loop() {
     if (!client.connected()){
         reconnect();
       }
-      //checkOST();
       getNoiseData();
       delay(2000);
       client.loop();
 }
+
 /**
       Funcao getNoiseData()
   Envia os dados no formato JSON via MQTT para os subscribers
@@ -88,7 +89,7 @@ void getNoiseData(){
 
     Serial.println("Coletando os dados de ruído!");
     int noise = analogRead(pinNoise);
-    double dB = 20 * log10(noise / 5);
+    double dB = 20*log10(noise+1);
 
     // checando se o sensor funciona
     if (isnan(noise)){
@@ -99,6 +100,7 @@ void getNoiseData(){
       Serial.print(" Ruído:");
       Serial.print(dB);
       Serial.print(" dB ");
+      Serial.println(noise);
       
       // convertendo para string
       String noiseS = String(dB);
@@ -112,7 +114,7 @@ void getNoiseData(){
       String payload = " { ";
       payload += "\"topico\":\""; payload += topic;
       payload += "\" , ";
-      payload += "\"ruído\":"; payload += noiseS;
+      payload += "\"sound_level\":"; payload += noiseS;
       payload += " } ";
 
       // Send payload
@@ -129,13 +131,13 @@ void getNoiseData(){
           digitalWrite(pinB, 255);
           digitalWrite(pinR, 0);
       }
-      if (dB >= 0 && dB <= 30)
+      if (dB >= 0 && dB <= 50)
       {
           digitalWrite(pinG, 255);
           digitalWrite(pinB, 0);
           digitalWrite(pinR, 0);
       }
-      if (dB > 30)
+      if (dB > 50)
       {
           digitalWrite(pinG, 0);
           digitalWrite(pinB, 0);
@@ -168,6 +170,7 @@ void InitWiFi(){
         }
        Serial.println("Conectando ao AP");
 }
+
 /**
       Funcao reconnect()
   Se conecta aao Broker via MQTT...
@@ -179,7 +182,7 @@ void reconnect() {
     if (client.connect("arduinoClient")) {
       Serial.println("Conectado!");
       String payload = " { ";
-      payload += "\"Erro\":"; payload += errorMQTT;
+      payload += "\"error\":"; payload += errorMQTT;
       payload += " } ";
       char attributes2[100];
       payload.toCharArray( attributes2, 100 );
