@@ -1,0 +1,13 @@
+## preparing the workspace for new simulations
+rm(list=ls(all=TRUE));
+
+library(ggplot2)
+
+noiseData <- read.csv("C:\\Users\\MaurícioM\\Desktop\\noise.csv", header= TRUE, sep=",");
+
+#constante de tempo
+time <- 1:1000;
+
+nd <- data.frame(time, noiseData);
+
+ggplot(data=noiseData, aes(x=time, y=noiseData$sound_level)) + geom_line(col="blue")
