@@ -10,4 +10,4 @@ time <- 1:1000;
 
 nd <- data.frame(time, noiseData);
 
-ggplot(data=noiseData, aes(x=time, y=noiseData$sound_level)) + geom_line(col="blue")
+ggplot(data=noiseData, aes(x=time, y=noiseData$sound_level)) + geom_line(col="blue");
